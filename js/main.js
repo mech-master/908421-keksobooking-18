@@ -34,8 +34,11 @@ var APARTMENT_PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
-var COORDINATE_MIN_X = 0;
-var COORDINATE_MAX_X = 1200;
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
+
+var COORDINATE_MIN_X = 0 + PIN_WIDTH / 2;
+var COORDINATE_MAX_X = 1200 - PIN_WIDTH / 2;
 var COORDINATE_MIN_Y = 130;
 var COORDINATE_MAX_Y = 630;
 
@@ -109,14 +112,12 @@ mapContainer.classList.remove('map--faded');
 var createOfferPins = function (offerCount) {
   var documentFragment = document.createDocumentFragment();
   var pinTempate = document.querySelector('#pin').content.querySelector('.map__pin');
-  var pinWIdth = pinTempate.style.width;
-  var pinHeight = pinTempate.style.height;
-
   var offerList = generateOfferList(offerCount);
   for (var l = 0; l < offerCount; l++) {
+    console.log(offerList[l].location);
     var newOffer = pinTempate.cloneNode(true);
-    newOffer.style.left = (offerList[l].location.x - pinWIdth / 2) + 'px';
-    newOffer.style.top = (offerList[l].location.y - pinHeight) + 'px';
+    newOffer.style.left = (offerList[l].location.x - PIN_WIDTH / 2) + 'px';
+    newOffer.style.top = (offerList[l].location.y - PIN_HEIGHT) + 'px';
     var pinImage = newOffer.querySelector('img');
     pinImage.src = offerList[l].author.avatar;
     pinImage.alt = offerList[l].offer.title;
