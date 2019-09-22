@@ -114,7 +114,6 @@ var createOfferPins = function (offerCount) {
   var pinTempate = document.querySelector('#pin').content.querySelector('.map__pin');
   var offerList = generateOfferList(offerCount);
   for (var l = 0; l < offerCount; l++) {
-    console.log(offerList[l].location);
     var newOffer = pinTempate.cloneNode(true);
     newOffer.style.left = (offerList[l].location.x - PIN_WIDTH / 2) + 'px';
     newOffer.style.top = (offerList[l].location.y - PIN_HEIGHT) + 'px';
