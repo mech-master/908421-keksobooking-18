@@ -268,6 +268,14 @@ mainMapPin.addEventListener('mousedown', function () {
   pageDisableStatusChange(false);
 });
 
+var ENTER_KEYCODE = 13;
+
+mainMapPin.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    pageDisableStatusChange(false);
+  }
+});
+
 (function () {
   var formRoomNumberSelect = document.querySelector('#room_number');
   var formGuestCapacitySelect = document.querySelector('#capacity');
