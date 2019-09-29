@@ -45,8 +45,8 @@ var APARTMENT_PHOTOS = [
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 
-var mapContainer = document.querySelector('.map');
-mapContainer.classList.remove('map--faded');
+var mapContainer = document.querySelector('.map'); /* */
+/* mapContainer.classList.remove('map--faded');/* */
 
 var COORDINATE_MIN_X = 0 + PIN_WIDTH / 2;
 var COORDINATE_MAX_X = mapContainer.offsetWidth - PIN_WIDTH / 2;
@@ -140,7 +140,7 @@ var createOfferPins = function (offerCount) {
 };
 
 var pinContainer = document.querySelector('.map__pins');
-pinContainer.appendChild(createOfferPins(OFFER_COUNT));
+pinContainer.appendChild(createOfferPins(OFFER_COUNT));/* */
 
 // Module3-task3
 
@@ -206,4 +206,105 @@ var createOfferCards = function (offerCount) {
 };
 
 var mapFiltersContainer = document.querySelector('.map__filters-container');
-mapFiltersContainer.before(createOfferCards(OFFER_COUNT));
+mapFiltersContainer.before(createOfferCards(OFFER_COUNT)); /* */
+
+// module4-task2
+
+var formElementDisableStatusChange = function (masterForm, selectorList, status) {
+  for (var i = 0; i < selectorList.length; i++) {
+    var elementList = masterForm.querySelectorAll(selectorList[i]);
+    for (var j = 0; j < elementList.length; j++) {
+      elementList[j].disabled = status;
+    }
+  }
+};
+
+var mainMapPin = document.querySelector('.map__pin--main');
+
+var refreshAddressValue = function (element) {
+  var elementParameters = {};
+  elementParameters.Left = element.offsetLeft;
+  elementParameters.Top = element.offsetTop;
+  elementParameters.Width = element.offsetWidth;
+  elementParameters.Height = element.offsetHeight;
+
+  var POINTER_HEIGHT = 22;
+
+  var formAdressInput = document.querySelector('#address');
+
+  if (mapContainer.classList.contains('map--faded')) {
+    formAdressInput.value = Math.round(elementParameters.Left + elementParameters.Width / 2) + ', ' + Math.round(elementParameters.Top + elementParameters.Height / 2);
+  } else {
+    formAdressInput.value = Math.round(elementParameters.Left + elementParameters.Width / 2) + ', ' + Math.round(elementParameters.Top + elementParameters.Height + POINTER_HEIGHT);
+  }
+}; /* */
+
+var pageDisableStatusChange = function (disabled) {
+  var newOfferForm = document.querySelector('.ad-form');
+  if (mapContainer) {
+    if (disabled) {
+      mapContainer.classList.add('map--faded');
+    } else {
+      mapContainer.classList.remove('map--faded');
+    }
+  }
+  if (newOfferForm) {
+    if (disabled) {
+      newOfferForm.classList.add('ad-form--disabled');
+    } else {
+      newOfferForm.classList.remove('ad-form--disabled');
+    }
+  }
+  var formElementsSelectors = ['input', 'select', 'button', 'textarea'];
+  var mapFiltersForm = document.querySelector('.map__filters');
+  formElementDisableStatusChange(newOfferForm, formElementsSelectors, disabled);
+  formElementDisableStatusChange(mapFiltersForm, formElementsSelectors, disabled);
+  refreshAddressValue(mainMapPin);
+};
+
+pageDisableStatusChange(true);
+
+mainMapPin.addEventListener('mousedown', function () {
+  pageDisableStatusChange(false);
+});
+
+(function () {
+  var formRoomNumberSelect = document.querySelector('#room_number');
+  var formGuestCapacitySelect = document.querySelector('#capacity');
+
+  if (formRoomNumberSelect.options.selectedIndex < 3) {
+    formGuestCapacitySelect.options.selectedIndex = 2 - formRoomNumberSelect.options.selectedIndex;
+  } else {
+    formGuestCapacitySelect.options.selectedIndex = 3;
+  }
+
+  var checkRoomsGuestsBalance = function () {
+    var abilityOptionIndexList = [];
+    if (formRoomNumberSelect.options.selectedIndex < 3) {
+      for (var i = 2; i >= 2 - formRoomNumberSelect.options.selectedIndex; i--) {
+        abilityOptionIndexList.push(i);
+      }
+    } else {
+      abilityOptionIndexList = [3];
+    }
+
+    if (abilityOptionIndexList.indexOf(formGuestCapacitySelect.options.selectedIndex) === -1) {
+      var message = 'При выбранном количестве комнат: ' +
+      formRoomNumberSelect.options[formRoomNumberSelect.options.selectedIndex].text +
+      '; могут быть выбраны только следующие параметры: ';
+      for (var j = 0; j < abilityOptionIndexList.length; j++) {
+        if (j === 0) {
+          message += formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
+        } else {
+          message += ', ' + formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
+        }
+      }
+      formGuestCapacitySelect.setCustomValidity(message);
+    } else {
+      formGuestCapacitySelect.setCustomValidity('');
+    }
+  };
+
+  formGuestCapacitySelect.addEventListener('change', checkRoomsGuestsBalance);
+  formRoomNumberSelect.addEventListener('change', checkRoomsGuestsBalance);
+})();
