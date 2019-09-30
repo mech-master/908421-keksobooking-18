@@ -140,7 +140,9 @@ var createOfferPins = function (offerCount) {
 };
 
 var pinContainer = document.querySelector('.map__pins');
-pinContainer.appendChild(createOfferPins(OFFER_COUNT));/* */
+if (!mapContainer.classList.contains('map--faded')) {
+  pinContainer.appendChild(createOfferPins(OFFER_COUNT));
+}
 
 // Module3-task3
 
@@ -206,7 +208,9 @@ var createOfferCards = function (offerCount) {
 };
 
 var mapFiltersContainer = document.querySelector('.map__filters-container');
-mapFiltersContainer.before(createOfferCards(OFFER_COUNT)); /* */
+if (!mapContainer.classList.contains('map--faded')) {
+  mapFiltersContainer.before(createOfferCards(OFFER_COUNT));
+}
 
 // module4-task2
 
@@ -239,17 +243,17 @@ var refreshAddressValue = function (element) {
   }
 }; /* */
 
-var pageDisableStatusChange = function (disabled) {
+var pageDisableStatusChange = function (isDisabled) {
   var newOfferForm = document.querySelector('.ad-form');
   if (mapContainer) {
-    if (disabled) {
+    if (isDisabled) {
       mapContainer.classList.add('map--faded');
     } else {
       mapContainer.classList.remove('map--faded');
     }
   }
   if (newOfferForm) {
-    if (disabled) {
+    if (isDisabled) {
       newOfferForm.classList.add('ad-form--disabled');
     } else {
       newOfferForm.classList.remove('ad-form--disabled');
@@ -257,8 +261,8 @@ var pageDisableStatusChange = function (disabled) {
   }
   var formElementsSelectors = ['input', 'select', 'button', 'textarea'];
   var mapFiltersForm = document.querySelector('.map__filters');
-  formElementDisableStatusChange(newOfferForm, formElementsSelectors, disabled);
-  formElementDisableStatusChange(mapFiltersForm, formElementsSelectors, disabled);
+  formElementDisableStatusChange(newOfferForm, formElementsSelectors, isDisabled);
+  formElementDisableStatusChange(mapFiltersForm, formElementsSelectors, isDisabled);
   refreshAddressValue(mainMapPin);
 };
 
