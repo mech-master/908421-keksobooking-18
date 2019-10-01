@@ -246,18 +246,10 @@ var refreshAddressValue = function (element) {
 var pageDisableStatusChange = function (isDisabled) {
   var newOfferForm = document.querySelector('.ad-form');
   if (mapContainer) {
-    if (isDisabled) {
-      mapContainer.classList.add('map--faded');
-    } else {
-      mapContainer.classList.remove('map--faded');
-    }
+    mapContainer.classList.toggle('map--faded', isDisabled);
   }
   if (newOfferForm) {
-    if (isDisabled) {
-      newOfferForm.classList.add('ad-form--disabled');
-    } else {
-      newOfferForm.classList.remove('ad-form--disabled');
-    }
+    newOfferForm.classList.add('ad-form--disabled', isDisabled);
   }
   var formElementsSelectors = ['input', 'select', 'button', 'textarea'];
   var mapFiltersForm = document.querySelector('.map__filters');
