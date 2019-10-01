@@ -275,21 +275,24 @@ mainMapPin.addEventListener('keydown', function (evt) {
 (function () {
   var formRoomNumberSelect = document.querySelector('#room_number');
   var formGuestCapacitySelect = document.querySelector('#capacity');
+  var roomNumberHundredIndex = 3;
+  var guestCapacityNoneIndex = 3;
+  var guestCapacityOneIndex = 2;
 
-  if (formRoomNumberSelect.options.selectedIndex < 3) {
-    formGuestCapacitySelect.options.selectedIndex = 2 - formRoomNumberSelect.options.selectedIndex;
+  if (formRoomNumberSelect.options.selectedIndex < roomNumberHundredIndex) {
+    formGuestCapacitySelect.options.selectedIndex = guestCapacityOneIndex - formRoomNumberSelect.options.selectedIndex;
   } else {
-    formGuestCapacitySelect.options.selectedIndex = 3;
+    formGuestCapacitySelect.options.selectedIndex = guestCapacityNoneIndex;
   }
 
   var checkRoomsGuestsBalance = function () {
     var abilityOptionIndexList = [];
-    if (formRoomNumberSelect.options.selectedIndex < 3) {
-      for (var i = 2; i >= 2 - formRoomNumberSelect.options.selectedIndex; i--) {
+    if (formRoomNumberSelect.options.selectedIndex < roomNumberHundredIndex) {
+      for (var i = guestCapacityOneIndex; i >= guestCapacityOneIndex - formRoomNumberSelect.options.selectedIndex; i--) {
         abilityOptionIndexList.push(i);
       }
     } else {
-      abilityOptionIndexList = [3];
+      abilityOptionIndexList = [guestCapacityNoneIndex];
     }
 
     if (abilityOptionIndexList.indexOf(formGuestCapacitySelect.options.selectedIndex) === -1) {
@@ -297,7 +300,7 @@ mainMapPin.addEventListener('keydown', function (evt) {
       formRoomNumberSelect.options[formRoomNumberSelect.options.selectedIndex].text +
       '; могут быть выбраны только следующие параметры: ';
       for (var j = 0; j < abilityOptionIndexList.length; j++) {
-        if (j === 0) {
+        if (j) {
           message += formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
         } else {
           message += ', ' + formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
