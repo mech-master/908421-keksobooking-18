@@ -139,11 +139,6 @@ var createOfferPins = function (offerCount) {
   return documentFragment;
 };
 
-var pinContainer = document.querySelector('.map__pins');
-if (!mapContainer.classList.contains('map--faded')) {
-  pinContainer.appendChild(createOfferPins(OFFER_COUNT));
-}
-
 // Module3-task3
 
 var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
@@ -249,10 +244,15 @@ var pageDisableStatusChange = function (isDisabled) {
     mapContainer.classList.toggle('map--faded', isDisabled);
   }
   if (newOfferForm) {
-    newOfferForm.classList.add('ad-form--disabled', isDisabled);
+    newOfferForm.classList.toggle('ad-form--disabled', isDisabled);
   }
   var formElementsSelectors = ['input', 'select', 'button', 'textarea'];
   var mapFiltersForm = document.querySelector('.map__filters');
+  if (!isDisabled) {
+    var pinContainer = document.querySelector('.map__pins');
+    pinContainer.appendChild(createOfferPins(OFFER_COUNT));
+  }
+
   formElementDisableStatusChange(newOfferForm, formElementsSelectors, isDisabled);
   formElementDisableStatusChange(mapFiltersForm, formElementsSelectors, isDisabled);
   refreshAddressValue(mainMapPin);
