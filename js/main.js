@@ -275,24 +275,24 @@ mainMapPin.addEventListener('keydown', function (evt) {
 (function () {
   var formRoomNumberSelect = document.querySelector('#room_number');
   var formGuestCapacitySelect = document.querySelector('#capacity');
-  var roomNumberHundredIndex = 3;
-  var guestCapacityNoneIndex = 3;
-  var guestCapacityOneIndex = 2;
+  var ROOM_NUMBER_HUNDRED_INDEX = 3;
+  var GUEST_CAPACITY_NONE_INDEX = 3;
+  var GUEST_CAPACITY_ONE_INDEX = 2;
 
-  if (formRoomNumberSelect.options.selectedIndex < roomNumberHundredIndex) {
-    formGuestCapacitySelect.options.selectedIndex = guestCapacityOneIndex - formRoomNumberSelect.options.selectedIndex;
+  if (formRoomNumberSelect.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
+    formGuestCapacitySelect.options.selectedIndex = GUEST_CAPACITY_ONE_INDEX - formRoomNumberSelect.options.selectedIndex;
   } else {
-    formGuestCapacitySelect.options.selectedIndex = guestCapacityNoneIndex;
+    formGuestCapacitySelect.options.selectedIndex = GUEST_CAPACITY_NONE_INDEX;
   }
 
   var checkRoomsGuestsBalance = function () {
     var abilityOptionIndexList = [];
-    if (formRoomNumberSelect.options.selectedIndex < roomNumberHundredIndex) {
-      for (var i = guestCapacityOneIndex; i >= guestCapacityOneIndex - formRoomNumberSelect.options.selectedIndex; i--) {
+    if (formRoomNumberSelect.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
+      for (var i = GUEST_CAPACITY_ONE_INDEX; i >= GUEST_CAPACITY_ONE_INDEX - formRoomNumberSelect.options.selectedIndex; i--) {
         abilityOptionIndexList.push(i);
       }
     } else {
-      abilityOptionIndexList = [guestCapacityNoneIndex];
+      abilityOptionIndexList = [GUEST_CAPACITY_NONE_INDEX];
     }
 
     if (abilityOptionIndexList.indexOf(formGuestCapacitySelect.options.selectedIndex) === -1) {
