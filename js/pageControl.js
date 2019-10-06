@@ -1,6 +1,42 @@
 'use strict';
 
 (function () {
+  var loadOfferDataSuccess = function (data) {
+    if (data) {
+      var pinContainer = document.querySelector('.map__pins');
+      var mapPinsFragment = window.pin.createOfferPins(data);
+      /* var mapOffersFragment = window.card.createOfferCards(data);/* */
+      pinContainer.appendChild(mapPinsFragment);
+      /* var mapFiltersContainer = document.querySelector('.map__filters-container'); /* */
+
+      /* mapFiltersContainer.before(mapOffersFragment);/* */
+    }
+  };
+
+  var loadError = function (message) {
+    var elemetErrorTemplate = document.querySelector('#error').content.querySelector('.error');
+    var newSectionError = elemetErrorTemplate.cloneNode(true);
+    var elementErrorMessage = newSectionError.querySelector('.error__message');
+    var pageMianSection = document.querySelector('main');
+    elementErrorMessage.textContent = message;
+
+    pageMianSection.appendChild(newSectionError);
+  };
+
+  var loadOfferData = function () {
+    try {
+      window.backend.load(loadOfferDataSuccess, loadError);
+    } catch (err) {
+      throw new Error('Ошибка ' + err.name + ' : ' + err.message + '\n' + err.stack);
+    }
+  };
+
+  window.pageControl = {
+    loadOfferData: loadOfferData,
+  };
+})();
+
+(function () {
   var formElementDisableStatusChange = function (masterForm, selectorList, status) {
     for (var i = 0; i < selectorList.length; i++) {
       var elementList = masterForm.querySelectorAll(selectorList[i]);
@@ -45,8 +81,7 @@
     var formElementsSelectors = ['input', 'select', 'button', 'textarea'];
     var mapFiltersForm = document.querySelector('.map__filters');
     if (!isDisabled) {
-      var pinContainer = document.querySelector('.map__pins');
-      pinContainer.appendChild(window.pin.createOfferPins(window.data.OFFER_COUNT));
+      window.pageControl.loadOfferData();
     }
 
     formElementDisableStatusChange(newOfferForm, formElementsSelectors, isDisabled);
