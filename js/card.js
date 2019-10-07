@@ -37,11 +37,10 @@
     }
   };
 
-  var createOfferCards = function (offerCount) {
+  var createOfferCards = function (offerList) {
     var documentFragment = document.createDocumentFragment();
-    var offerList = window.data.offerList;
 
-    for (var k = 0; k < offerCount; k++) {
+    for (var k = 0; k < offerList.length; k++) {
       var newOfferCard = cardTemplate.cloneNode(true);
       var apartmentTypeRus = window.data.APARTMENT_TYPE_VARIANTS_RUS[window.data.APARTMENT_TYPE_VARIANTS.indexOf(offerList[k].offer.type)];
       var cardFeaturesElementList = newOfferCard.querySelector('.popup__features');
