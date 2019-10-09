@@ -148,7 +148,7 @@
     'flat': 1000,
     'house': 5000,
     'palace': 10000
-  }
+  };
 
   var flatTypeSelect = document.querySelector('#type');
   var flatPriceInput = document.querySelector('#price');
@@ -173,7 +173,7 @@
     } else {
       elementCheckinSelect.options.selectedIndex = elementCheckoutSelect.options.selectedIndex;
     }
-  }
+  };
   elementCheckinSelect.addEventListener('change', agreeCheckinCheckout);
   elementCheckoutSelect.addEventListener('change', agreeCheckinCheckout);
 })();

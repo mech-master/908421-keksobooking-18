@@ -56,7 +56,7 @@
     };
 
     var onEscCardClose = function (evt) {
-      if ((evt.type === 'keydown') &&(evt.keyCode === ESC_KEYCODE)) {
+      if ((evt.type === 'keydown') && (evt.keyCode === ESC_KEYCODE)) {
         newOfferCard.remove();
       }
     };
