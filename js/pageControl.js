@@ -5,11 +5,7 @@
     if (data) {
       var pinContainer = document.querySelector('.map__pins');
       var mapPinsFragment = window.pin.createOfferPins(data);
-      /* var mapOffersFragment = window.card.createOfferCards(data);/* */
       pinContainer.appendChild(mapPinsFragment);
-      /* var mapFiltersContainer = document.querySelector('.map__filters-container'); /* */
-
-      /* mapFiltersContainer.before(mapOffersFragment);/* */
     }
   };
 
@@ -144,4 +140,40 @@
 
   formGuestCapacitySelect.addEventListener('change', checkRoomsGuestsBalance);
   formRoomNumberSelect.addEventListener('change', checkRoomsGuestsBalance);
+})();
+
+(function () {
+  var flatMinimumPrices = {
+    'bungalo': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000
+  }
+
+  var flatTypeSelect = document.querySelector('#type');
+  var flatPriceInput = document.querySelector('#price');
+
+  var setMininmalPrice = function () {
+    var currentFlatType = flatTypeSelect.options[flatTypeSelect.options.selectedIndex].value;
+    flatPriceInput.setAttribute('min', flatMinimumPrices[currentFlatType]);
+    flatPriceInput.setAttribute('placeholder', flatMinimumPrices[currentFlatType]);
+  };
+
+  flatTypeSelect.addEventListener('change', setMininmalPrice);
+
+  setMininmalPrice();
+})();
+
+(function () {
+  var elementCheckinSelect = document.querySelector('#timein');
+  var elementCheckoutSelect = document.querySelector('#timeout');
+  var agreeCheckinCheckout = function (evt) {
+    if (evt.target === elementCheckinSelect) {
+      elementCheckoutSelect.options.selectedIndex = elementCheckinSelect.options.selectedIndex;
+    } else {
+      elementCheckinSelect.options.selectedIndex = elementCheckoutSelect.options.selectedIndex;
+    }
+  }
+  elementCheckinSelect.addEventListener('change', agreeCheckinCheckout);
+  elementCheckoutSelect.addEventListener('change', agreeCheckinCheckout);
 })();
