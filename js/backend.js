@@ -2,9 +2,13 @@
 
 (function () {
   window.backend = {
+    operationType: 'load',
     load: function (onLoad, onError) {
+      this.operationType = 'load';
+      this.exchangeData(onLoad, onError);
+    },
+    exchangeData: function (onLoad, onError, data) {
       var xhr = new XMLHttpRequest();
-      var URL = 'https://js.dump.academy/keksobooking/data';
 
       xhr.responseType = 'json';
       xhr.addEventListener('load', function () {
@@ -24,8 +28,19 @@
       });
 
       xhr.timeout = 10000;
-      xhr.open('GET', URL);
-      xhr.send();
+
+      switch (this.operationType) {
+        case 'load':
+          xhr.open('GET', 'https://js.dump.academy/keksobooking/data');
+          xhr.send();
+          break;
+        case 'save':
+          xhr.open('POST', 'https://js.dump.academy/keksobooking');
+          xhr.send(data);
+          break;
+        default:
+          onError('Не определен тип операции');
+      }
     }
   };
 })();
