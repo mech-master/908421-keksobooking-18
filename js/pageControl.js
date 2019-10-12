@@ -3,9 +3,8 @@
 (function () {
   var loadOfferDataSuccess = function (data) {
     if (data) {
-      var pinContainer = document.querySelector('.map__pins');
-      var mapPinsFragment = window.pin.createOfferPins(data);
-      pinContainer.appendChild(mapPinsFragment);
+      window.pageControl.offerList = data;
+      window.pin.fillPinContainer(data);
     }
   };
 
@@ -29,6 +28,7 @@
 
   window.pageControl = {
     loadOfferData: loadOfferData,
+    offerList: []
   };
 })();
 
@@ -45,8 +45,6 @@
   var mapContainer = document.querySelector('.map');
 
   var mainMapPin = document.querySelector('.map__pin--main');
-
-  var ENTER_KEYCODE = 13;
 
   var refreshAddressValue = function (element) {
     var elementParameters = {};
@@ -92,7 +90,7 @@
   });
 
   mainMapPin.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
+    if (evt.keyCode === window.data.Keycode.ENTER) {
       pageDisableStatusChange(false);
     }
   });
@@ -176,4 +174,16 @@
   };
   elementCheckinSelect.addEventListener('change', agreeCheckinCheckout);
   elementCheckoutSelect.addEventListener('change', agreeCheckinCheckout);
+})();
+
+(function () {
+  var flatTypeSelect = document.querySelector('#housing-type');
+  flatTypeSelect.addEventListener('change', function () {
+    var mapCardList = document.querySelectorAll('.map__card');
+    mapCardList.forEach(function (item) {
+      item.remove();
+    });
+
+    window.pin.fillPinContainer(window.pageControl.offerList);
+  });
 })();

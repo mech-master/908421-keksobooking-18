@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var VISIBLE_OFFER_COUNT = 5;
+  var flatTypeSelect = document.querySelector('#housing-type');
+  var currentFlatType = flatTypeSelect.options[flatTypeSelect.options.selectedIndex].value;
   var onCardShow = function (elementPin, elementCard) {
     var mapFiltersContainer = document.querySelector('.map__filters-container');
 
@@ -22,15 +25,26 @@
   var createOfferPins = function (offerList) {
     var pinsFragment = document.createDocumentFragment();
     var pinTempate = document.querySelector('#pin').content.querySelector('.map__pin');
-    for (var l = 0; l < offerList.length; l++) {
-      var newOfferPin = pinTempate.cloneNode(true);
-      newOfferPin.style.left = (offerList[l].location.x - window.data.PIN_WIDTH / 2) + 'px';
-      newOfferPin.style.top = (offerList[l].location.y - window.data.PIN_HEIGHT) + 'px';
-      var pinImage = newOfferPin.querySelector('img');
-      pinImage.src = offerList[l].author.avatar;
-      pinImage.alt = offerList[l].offer.title;
+    currentFlatType = flatTypeSelect.options[flatTypeSelect.options.selectedIndex].value;
+    if (currentFlatType !== 'any') {
+      var filteredOfferList = offerList.filter(function (item) {
+        return item.offer.type === currentFlatType;
+      });
+    } else {
+      filteredOfferList = offerList;
+    }
 
-      var newOfferCard = window.card.createOfferCards(offerList[l]);
+    var offerCount = filteredOfferList.length > VISIBLE_OFFER_COUNT ? VISIBLE_OFFER_COUNT : filteredOfferList.length;
+
+    for (var l = 0; l < offerCount; l++) {
+      var newOfferPin = pinTempate.cloneNode(true);
+      newOfferPin.style.left = (filteredOfferList[l].location.x - window.data.PIN_WIDTH / 2) + 'px';
+      newOfferPin.style.top = (filteredOfferList[l].location.y - window.data.PIN_HEIGHT) + 'px';
+      var pinImage = newOfferPin.querySelector('img');
+      pinImage.src = filteredOfferList[l].author.avatar;
+      pinImage.alt = filteredOfferList[l].offer.title;
+
+      var newOfferCard = window.card.createOfferCards(filteredOfferList[l]);
 
       onCardShow(newOfferPin, newOfferCard);
 
@@ -39,7 +53,19 @@
     return pinsFragment;
   };
 
+  var fillPinContainer = function (data) {
+    var pinContainer = document.querySelector('.map__pins');
+    var existsMapPins = pinContainer.querySelectorAll('.map__pin');
+    existsMapPins.forEach(function (item) {
+      if (!item.classList.contains('map__pin--main')) {
+        item.remove();
+      }
+    });
+    var mapPinsFragment = createOfferPins(data);
+    pinContainer.appendChild(mapPinsFragment);
+  };
+
   window.pin = {
-    createOfferPins: createOfferPins
+    fillPinContainer: fillPinContainer
   };
 })();
