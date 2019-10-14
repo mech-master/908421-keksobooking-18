@@ -7,30 +7,28 @@
     ENTER: 13
   };
 
-  var APARTMENT_TYPE_VARIANTS = [
-    'palace',
-    'flat',
-    'house',
-    'bungalo'
-  ];
+  var apartmentTypesEngToRus = {
+    'palace': 'Дворец',
+    'flat': 'Квартира',
+    'house': 'Дом',
+    'bungalo': 'Бунгало'
+  };
 
-  var APARTMENT_TYPE_VARIANTS_RUS = [
-    'Дворец',
-    'Квартира',
-    'Дом',
-    'Бунгало'
-  ];
 
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
+  var MapContainerOffset = {
+    TOP: 130,
+    BOTTOM: 600
+  };
 
   window.data = {
     Keycode: Keycode,
     OFFER_COUNT: OFFER_COUNT,
     PIN_WIDTH: PIN_WIDTH,
     PIN_HEIGHT: PIN_HEIGHT,
-    APARTMENT_TYPE_VARIANTS: APARTMENT_TYPE_VARIANTS,
-    APARTMENT_TYPE_VARIANTS_RUS: APARTMENT_TYPE_VARIANTS_RUS
+    apartmentTypesEngToRus: apartmentTypesEngToRus,
+    MapContainerOffset: MapContainerOffset
   };
 })();
 

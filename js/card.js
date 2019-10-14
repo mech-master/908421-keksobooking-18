@@ -43,7 +43,6 @@
 
   var createOfferCards = function (offerItem) {
     var newOfferCard = cardTemplate.cloneNode(true);
-    var apartmentTypeRus = window.data.APARTMENT_TYPE_VARIANTS_RUS[window.data.APARTMENT_TYPE_VARIANTS.indexOf(offerItem.offer.type)];
     var cardFeaturesElementList = newOfferCard.querySelector('.popup__features');
     var buttonCardClose = newOfferCard.querySelector('.popup__close');
     var ENTER_KEYCODE = 13;
@@ -64,7 +63,7 @@
     newOfferCard.querySelector('.popup__title').textContent = offerItem.offer.title;
     newOfferCard.querySelector('.popup__text--address').textContent = offerItem.offer.address;
     newOfferCard.querySelector('.popup__text--price').innerHTML = offerItem.offer.price + '&#8381;/ночь';
-    newOfferCard.querySelector('.popup__type').textContent = apartmentTypeRus;
+    newOfferCard.querySelector('.popup__type').textContent = window.data.apartmentTypesEngToRus[offerItem.offer.type];
     newOfferCard.querySelector('.popup__text--capacity').textContent = declinationCount(offerItem.offer.rooms, 'комната', 'комнаты') + ' для ' + declinationCount(offerItem.offer.guests, 'гостя', 'гостей');
     newOfferCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
     deleteUnexistsItem(cardFeaturesElementList, offerItem.offer.features);

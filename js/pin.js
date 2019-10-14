@@ -50,6 +50,7 @@
 
       pinsFragment.appendChild(newOfferPin);
     }
+
     return pinsFragment;
   };
 

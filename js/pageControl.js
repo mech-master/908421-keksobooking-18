@@ -47,21 +47,28 @@
   var mainMapPin = document.querySelector('.map__pin--main');
 
   var refreshAddressValue = function (element) {
-    var elementParameters = {};
-    elementParameters.Left = element.offsetLeft;
-    elementParameters.Top = element.offsetTop;
-    elementParameters.Width = element.offsetWidth;
-    elementParameters.Height = element.offsetHeight;
+    var elementParameters = {
+      left: element.offsetLeft,
+      top: element.offsetTop,
+      width: element.offsetWidth,
+      height: element.offsetHeight
+    };
 
-    var POINTER_HEIGHT = 22;
+    var POINTER_HEIGHT = 17;
 
     var formAdressInput = document.querySelector('#address');
 
+    var elementCoordinates = {
+      x: Math.round(elementParameters.left + elementParameters.width / 2),
+      y: Math.round(elementParameters.top + elementParameters.height + POINTER_HEIGHT)
+    };
+
     if (mapContainer.classList.contains('map--faded')) {
-      formAdressInput.value = Math.round(elementParameters.Left + elementParameters.Width / 2) + ', ' + Math.round(elementParameters.Top + elementParameters.Height / 2);
-    } else {
-      formAdressInput.value = Math.round(elementParameters.Left + elementParameters.Width / 2) + ', ' + Math.round(elementParameters.Top + elementParameters.Height + POINTER_HEIGHT);
+      elementCoordinates = Math.round(elementParameters.top + elementParameters.height / 2);
     }
+
+    formAdressInput.value = elementCoordinates.x + ', ' + elementCoordinates.y;
+    return elementCoordinates;
   };
 
   var pageDisableStatusChange = function (isDisabled) {
@@ -85,8 +92,49 @@
 
   pageDisableStatusChange(true);
 
-  mainMapPin.addEventListener('mousedown', function () {
+  mainMapPin.addEventListener('mousedown', function (evtMouseDown) {
+    evtMouseDown.preventDefault();
     pageDisableStatusChange(false);
+
+    var startMouseCoordinates = {
+      x: evtMouseDown.clientX,
+      y: evtMouseDown.clientY
+    };
+
+    var onMianPinMouseMove = function (evtMouseMove) {
+      evtMouseMove.preventDefault();
+
+      var shiftMouseCoordinates = {
+        x: startMouseCoordinates.x - evtMouseMove.clientX,
+        y: startMouseCoordinates.y - evtMouseMove.clientY
+      };
+
+      startMouseCoordinates = {
+        x: evtMouseMove.clientX,
+        y: evtMouseMove.clientY
+      };
+
+      var pointerCoordinates = refreshAddressValue(mainMapPin);
+
+      if (((pointerCoordinates.x - shiftMouseCoordinates.x) >= 0) && ((pointerCoordinates.x - shiftMouseCoordinates.x) <= mapContainer.offsetWidth)) {
+        mainMapPin.style.left = (mainMapPin.offsetLeft - shiftMouseCoordinates.x) + 'px';
+      }
+
+      if (((pointerCoordinates.y - shiftMouseCoordinates.y) >= window.data.MapContainerOffset.TOP) && ((pointerCoordinates.y - shiftMouseCoordinates.y) <= window.data.MapContainerOffset.BOTTOM)) {
+        mainMapPin.style.top = (mainMapPin.offsetTop - shiftMouseCoordinates.y) + 'px';
+      }
+    };
+
+    var onMianPinMouseUp = function (evtMouseUp) {
+      evtMouseUp.preventDefault();
+
+      document.removeEventListener('mousemove', onMianPinMouseMove);
+      document.removeEventListener('mouseup', onMianPinMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMianPinMouseMove);
+    document.addEventListener('mouseup', onMianPinMouseUp);
+
   });
 
   mainMapPin.addEventListener('keydown', function (evt) {
