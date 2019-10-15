@@ -33,6 +33,55 @@
 })();
 
 (function () {
+  var formRoomNumberSelect = document.querySelector('#room_number');
+  var formGuestCapacitySelect = document.querySelector('#capacity');
+  var ROOM_NUMBER_HUNDRED_INDEX = 3;
+  var GUEST_CAPACITY_NONE_INDEX = 3;
+  var GUEST_CAPACITY_ONE_INDEX = 2;
+
+  if (formRoomNumberSelect.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
+    formGuestCapacitySelect.options.selectedIndex = GUEST_CAPACITY_ONE_INDEX - formRoomNumberSelect.options.selectedIndex;
+  } else {
+    formGuestCapacitySelect.options.selectedIndex = GUEST_CAPACITY_NONE_INDEX;
+  }
+
+  var checkRoomsGuestsBalance = function () {
+    var abilityOptionIndexList = [];
+    if (formRoomNumberSelect.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
+      for (var i = GUEST_CAPACITY_ONE_INDEX; i >= GUEST_CAPACITY_ONE_INDEX - formRoomNumberSelect.options.selectedIndex; i--) {
+        abilityOptionIndexList.push(i);
+      }
+    } else {
+      abilityOptionIndexList = [GUEST_CAPACITY_NONE_INDEX];
+    }
+
+    if (abilityOptionIndexList.indexOf(formGuestCapacitySelect.options.selectedIndex) === -1) {
+      var message = 'При выбранном количестве комнат: ' +
+      formRoomNumberSelect.options[formRoomNumberSelect.options.selectedIndex].text +
+      '; могут быть выбраны только следующие параметры: ';
+      for (var j = 0; j < abilityOptionIndexList.length; j++) {
+        if (j) {
+          message += formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
+        } else {
+          message += ', ' + formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
+        }
+      }
+      formGuestCapacitySelect.setCustomValidity(message);
+    } else {
+      formGuestCapacitySelect.setCustomValidity('');
+    }
+  };
+
+  formGuestCapacitySelect.addEventListener('change', checkRoomsGuestsBalance);
+  formRoomNumberSelect.addEventListener('change', checkRoomsGuestsBalance);
+
+  window.pageControl['checkRoomsGuestsBalance'] = checkRoomsGuestsBalance;
+})();
+
+
+(function () {
+  var mainMapPinStartCoordinate;
+
   var formElementDisableStatusChange = function (masterForm, selectorList, status) {
     for (var i = 0; i < selectorList.length; i++) {
       var elementList = masterForm.querySelectorAll(selectorList[i]);
@@ -64,7 +113,7 @@
     };
 
     if (mapContainer.classList.contains('map--faded')) {
-      elementCoordinates = Math.round(elementParameters.top + elementParameters.height / 2);
+      elementCoordinates.y = Math.round(elementParameters.top + elementParameters.height / 2);
     }
 
     formAdressInput.value = elementCoordinates.x + ', ' + elementCoordinates.y;
@@ -73,6 +122,12 @@
 
   var pageDisableStatusChange = function (isDisabled) {
     var newOfferForm = document.querySelector('.ad-form');
+    if (!mainMapPinStartCoordinate) {
+      mainMapPinStartCoordinate = {
+        x: mainMapPin.offsetLeft,
+        y: mainMapPin.offsetTop
+      };
+    }
     if (mapContainer) {
       mapContainer.classList.toggle('map--faded', isDisabled);
     }
@@ -81,8 +136,15 @@
     }
     var formElementsSelectors = ['input', 'select', 'button', 'textarea'];
     var mapFiltersForm = document.querySelector('.map__filters');
+    var formAd = document.querySelector('.ad-form');
     if (!isDisabled) {
       window.pageControl.loadOfferData();
+    } else {
+      mainMapPin.style.left = mainMapPinStartCoordinate.x + 'px';
+      mainMapPin.style.top = mainMapPinStartCoordinate.y + 'px';
+      window.pin.deleteExistsPins();
+      formAd.reset();
+      window.pageControl.checkRoomsGuestsBalance();
     }
 
     formElementDisableStatusChange(newOfferForm, formElementsSelectors, isDisabled);
@@ -142,50 +204,9 @@
       pageDisableStatusChange(false);
     }
   });
-})();
-
-(function () {
-  var formRoomNumberSelect = document.querySelector('#room_number');
-  var formGuestCapacitySelect = document.querySelector('#capacity');
-  var ROOM_NUMBER_HUNDRED_INDEX = 3;
-  var GUEST_CAPACITY_NONE_INDEX = 3;
-  var GUEST_CAPACITY_ONE_INDEX = 2;
-
-  if (formRoomNumberSelect.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
-    formGuestCapacitySelect.options.selectedIndex = GUEST_CAPACITY_ONE_INDEX - formRoomNumberSelect.options.selectedIndex;
-  } else {
-    formGuestCapacitySelect.options.selectedIndex = GUEST_CAPACITY_NONE_INDEX;
-  }
-
-  var checkRoomsGuestsBalance = function () {
-    var abilityOptionIndexList = [];
-    if (formRoomNumberSelect.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
-      for (var i = GUEST_CAPACITY_ONE_INDEX; i >= GUEST_CAPACITY_ONE_INDEX - formRoomNumberSelect.options.selectedIndex; i--) {
-        abilityOptionIndexList.push(i);
-      }
-    } else {
-      abilityOptionIndexList = [GUEST_CAPACITY_NONE_INDEX];
-    }
-
-    if (abilityOptionIndexList.indexOf(formGuestCapacitySelect.options.selectedIndex) === -1) {
-      var message = 'При выбранном количестве комнат: ' +
-      formRoomNumberSelect.options[formRoomNumberSelect.options.selectedIndex].text +
-      '; могут быть выбраны только следующие параметры: ';
-      for (var j = 0; j < abilityOptionIndexList.length; j++) {
-        if (j) {
-          message += formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
-        } else {
-          message += ', ' + formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
-        }
-      }
-      formGuestCapacitySelect.setCustomValidity(message);
-    } else {
-      formGuestCapacitySelect.setCustomValidity('');
-    }
-  };
-
-  formGuestCapacitySelect.addEventListener('change', checkRoomsGuestsBalance);
-  formRoomNumberSelect.addEventListener('change', checkRoomsGuestsBalance);
+  window.pageControl['pageDisableStatusChange'] = pageDisableStatusChange;
+  window.pageControl['refreshAddressValue'] = refreshAddressValue;
+  window.pageControl['mainMapPin'] = mainMapPin;
 })();
 
 (function () {
@@ -222,16 +243,74 @@
   };
   elementCheckinSelect.addEventListener('change', agreeCheckinCheckout);
   elementCheckoutSelect.addEventListener('change', agreeCheckinCheckout);
-})();
 
-(function () {
   var flatTypeSelect = document.querySelector('#housing-type');
   flatTypeSelect.addEventListener('change', function () {
-    var mapCardList = document.querySelectorAll('.map__card');
-    mapCardList.forEach(function (item) {
-      item.remove();
-    });
+    window.card.deleteExistsCards();
 
     window.pin.fillPinContainer(window.pageControl.offerList);
   });
+})();
+
+(function () {
+  var formAd = document.querySelector('.ad-form');
+  var buttonAdFormReset = formAd.querySelector('.ad-form__reset');
+
+  var onSaveData = function () {
+    var templateSuccessMessage = document.querySelector('#success').content.querySelector('.success');
+    var sectionMain = document.querySelector('main');
+    var messageSuccess = templateSuccessMessage.cloneNode(true);
+    var onMessageSuccessClose = function (evt) {
+      if (((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.data.Keycode.ESC))) {
+        messageSuccess.remove();
+        document.removeEventListener('keydown', onMessageSuccessClose);
+      }
+    };
+    messageSuccess.addEventListener('click', onMessageSuccessClose);
+    document.addEventListener('keydown', onMessageSuccessClose);
+    sectionMain.appendChild(messageSuccess);
+    window.pageControl.pageDisableStatusChange(true);
+  };
+
+  var onSaveError = function (message) {
+    var templateErrorMessage = document.querySelector('#error').content.querySelector('.error');
+    var sectionMain = document.querySelector('main');
+    var messageError = templateErrorMessage.cloneNode(true);
+    var paragraphErrorMessage = messageError.querySelector('.error__message');
+    var buttonErrorMessageClose = messageError.querySelector('.error__button');
+    var onErrorMessageClose = function (evt) {
+      if (((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.data.Keycode.ESC)) || (evt.type === 'keydown' && evt.keyCode === window.data.Keycode.ENTER && evt.target === buttonErrorMessageClose)) {
+        messageError.remove();
+        document.removeEventListener('keydown', onErrorMessageClose);
+      }
+    };
+
+    messageError.addEventListener('click', onErrorMessageClose);
+    document.addEventListener('keydown', onErrorMessageClose);
+    buttonErrorMessageClose.addEventListener('click', onErrorMessageClose);
+    buttonErrorMessageClose.addEventListener('keydown', onErrorMessageClose);
+    paragraphErrorMessage.textContent = message;
+    sectionMain.appendChild(messageError);
+  };
+
+  var onAdFormSubmit = function (evt) {
+    evt.preventDefault();
+
+    window.backend.save(new FormData(formAd), onSaveData, onSaveError);
+  };
+
+  var onAdFormReset = function (evt) {
+    if (((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.data.Keycode.ENTER))) {
+      evt.preventDefault();
+      formAd.reset();
+      window.pageControl.refreshAddressValue(window.pageControl.mainMapPin);
+    }
+  };
+
+  formAd.addEventListener('submit', onAdFormSubmit);
+  formAd.addEventListener('reset', onAdFormReset);
+
+  buttonAdFormReset.addEventListener('click', onAdFormReset);
+  buttonAdFormReset.addEventListener('keydown', onAdFormReset);
+
 })();
