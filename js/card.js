@@ -78,7 +78,15 @@
     return newOfferCard;
   };
 
+  var deleteExistsCards = function () {
+    var existsCardList = document.querySelectorAll('.map__card.popup');
+    existsCardList.forEach(function (item) {
+      item.remove();
+    });
+  };
+
   window.card = {
-    createOfferCards: createOfferCards
+    createOfferCards: createOfferCards,
+    deleteExistsCards: deleteExistsCards
   };
 })();
