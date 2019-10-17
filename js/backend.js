@@ -3,10 +3,6 @@
 (function () {
   window.backend = {
     operationType: 'load',
-    load: function (onLoad, onError) {
-      this.operationType = 'load';
-      this.exchangeData(onLoad, onError);
-    },
     exchangeData: function (onLoad, onError, data) {
       var xhr = new XMLHttpRequest();
 
@@ -41,6 +37,14 @@
         default:
           onError('Не определен тип операции');
       }
+    },
+    load: function (onLoad, onError) {
+      this.operationType = 'load';
+      this.exchangeData(onLoad, onError);
+    },
+    save: function (data, onLoad, onError) {
+      this.operationType = 'save';
+      this.exchangeData(onLoad, onError, data);
     }
   };
 })();
