@@ -2,8 +2,10 @@
 
 (function () {
   var VISIBLE_OFFER_COUNT = 5;
+
   /* var flatTypeSelect = document.querySelector('#housing-type');
   var currentFlatType = flatTypeSelect.options[flatTypeSelect.options.selectedIndex].value;/* */
+
   var pinContainer = document.querySelector('.map__pins');
 
   var onCardShow = function (elementPin, elementCard) {

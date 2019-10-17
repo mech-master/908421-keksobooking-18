@@ -13,6 +13,7 @@
 
   /* Перевод всех элементов управления из списка в активный/неактивный режим /* */
 
+
   var formElementDisableStatusChange = function (masterForm, selectorList, status) {
     for (var i = 0; i < selectorList.length; i++) {
       var elementList = masterForm.querySelectorAll(selectorList[i]);
@@ -45,6 +46,7 @@
       };
     }
 
+
     if (mapContainer) {
       mapContainer.classList.toggle('map--faded', isDisabled);
     }
@@ -52,6 +54,7 @@
       newOfferForm.classList.toggle('ad-form--disabled', isDisabled);
     }
     var formElementsSelectors = ['input', 'select', 'button', 'textarea'];
+
     formElementDisableStatusChange(newOfferForm, formElementsSelectors, isDisabled);
     formElementDisableStatusChange(mapFiltersForm, formElementsSelectors, isDisabled);
     if (isDisabled) {
@@ -114,6 +117,7 @@
     }
   });
 
+
   mainMapPin.addEventListener('keydown', function (evt) {
     if (evt.keyCode === window.common.Keycode.ENTER) {
       if (mapContainer.classList.contains('map--faded')) {
@@ -127,6 +131,7 @@
 
   var onAdFormSubmit = function (evt) {
     evt.preventDefault();
+
 
     window.backend.save(new FormData(formAd), window.common.onSuccessMessageShow, window.common.onErrorMessageShow);
   };
@@ -147,4 +152,67 @@
   window.pageControl = {
     pageDisableStatusChange: pageDisableStatusChange
   };
+})();
+
+(function () {
+  var formAd = document.querySelector('.ad-form');
+  var buttonAdFormReset = formAd.querySelector('.ad-form__reset');
+
+  var onSaveData = function () {
+    var templateSuccessMessage = document.querySelector('#success').content.querySelector('.success');
+    var sectionMain = document.querySelector('main');
+    var messageSuccess = templateSuccessMessage.cloneNode(true);
+    var onMessageSuccessClose = function (evt) {
+      if (((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.data.Keycode.ESC))) {
+        messageSuccess.remove();
+        document.removeEventListener('keydown', onMessageSuccessClose);
+      }
+    };
+    messageSuccess.addEventListener('click', onMessageSuccessClose);
+    document.addEventListener('keydown', onMessageSuccessClose);
+    sectionMain.appendChild(messageSuccess);
+    window.pageControl.pageDisableStatusChange(true);
+  };
+
+  var onSaveError = function (message) {
+    var templateErrorMessage = document.querySelector('#error').content.querySelector('.error');
+    var sectionMain = document.querySelector('main');
+    var messageError = templateErrorMessage.cloneNode(true);
+    var paragraphErrorMessage = messageError.querySelector('.error__message');
+    var buttonErrorMessageClose = messageError.querySelector('.error__button');
+    var onErrorMessageClose = function (evt) {
+      if (((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.data.Keycode.ESC)) || (evt.type === 'keydown' && evt.keyCode === window.data.Keycode.ENTER && evt.target === buttonErrorMessageClose)) {
+        messageError.remove();
+        document.removeEventListener('keydown', onErrorMessageClose);
+      }
+    };
+
+    messageError.addEventListener('click', onErrorMessageClose);
+    document.addEventListener('keydown', onErrorMessageClose);
+    buttonErrorMessageClose.addEventListener('click', onErrorMessageClose);
+    buttonErrorMessageClose.addEventListener('keydown', onErrorMessageClose);
+    paragraphErrorMessage.textContent = message;
+    sectionMain.appendChild(messageError);
+  };
+
+  var onAdFormSubmit = function (evt) {
+    evt.preventDefault();
+
+    window.backend.save(new FormData(formAd), onSaveData, onSaveError);
+  };
+
+  var onAdFormReset = function (evt) {
+    if (((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.data.Keycode.ENTER))) {
+      evt.preventDefault();
+      formAd.reset();
+      window.pageControl.refreshAddressValue(window.pageControl.mainMapPin);
+    }
+  };
+
+  formAd.addEventListener('submit', onAdFormSubmit);
+  formAd.addEventListener('reset', onAdFormReset);
+
+  buttonAdFormReset.addEventListener('click', onAdFormReset);
+  buttonAdFormReset.addEventListener('keydown', onAdFormReset);
+
 })();
