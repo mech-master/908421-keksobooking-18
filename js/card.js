@@ -54,7 +54,6 @@
 
     var onEscCardClose = function (evt) {
       if ((evt.type === 'keydown') && (evt.keyCode === window.common.Keycode.ESC)) {
-        document.removeEventListener('keydown', onEscCardClose);
         newOfferCard.remove();
       }
     };

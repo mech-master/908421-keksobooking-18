@@ -14,6 +14,10 @@
     var onPinAction = function (evt) {
       if ((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.common.Keycode.ENTER)) {
         window.card.deleteExistsCards();
+        if (document.querySelector('.map__pin--active')) {
+          document.querySelector('.map__pin--active').classList.remove('map__pin--active');
+        }
+        evt.currentTarget.classList.add('map__pin--active');
         mapFiltersContainer.before(elementCard);
       }
     };
@@ -28,18 +32,20 @@
     var offerCount = offerList.length > VISIBLE_OFFER_COUNT ? VISIBLE_OFFER_COUNT : offerList.length;
 
     for (var l = 0; l < offerCount; l++) {
-      var newOfferPin = pinTempate.cloneNode(true);
-      newOfferPin.style.left = (offerList[l].location.x - window.common.PIN_WIDTH / 2) + 'px';
-      newOfferPin.style.top = (offerList[l].location.y - window.common.PIN_HEIGHT) + 'px';
-      var pinImage = newOfferPin.querySelector('img');
-      pinImage.src = offerList[l].author.avatar;
-      pinImage.alt = offerList[l].offer.title;
+      if (offerList[l].offer) {
+        var newOfferPin = pinTempate.cloneNode(true);
+        newOfferPin.style.left = (offerList[l].location.x - window.common.PIN_WIDTH / 2) + 'px';
+        newOfferPin.style.top = (offerList[l].location.y - window.common.PIN_HEIGHT) + 'px';
+        var pinImage = newOfferPin.querySelector('img');
+        pinImage.src = offerList[l].author.avatar;
+        pinImage.alt = offerList[l].offer.title;
 
-      var newOfferCard = window.card.createOfferCards(offerList[l]);
+        var newOfferCard = window.card.createOfferCards(offerList[l]);
 
-      onCardShow(newOfferPin, newOfferCard);
+        onCardShow(newOfferPin, newOfferCard);
 
-      pinsFragment.appendChild(newOfferPin);
+        pinsFragment.appendChild(newOfferPin);
+      }
     }
 
     return pinsFragment;
