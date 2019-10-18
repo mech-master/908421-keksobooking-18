@@ -45,17 +45,16 @@
     var newOfferCard = cardTemplate.cloneNode(true);
     var cardFeaturesElementList = newOfferCard.querySelector('.popup__features');
     var buttonCardClose = newOfferCard.querySelector('.popup__close');
-    var ENTER_KEYCODE = 13;
-    var ESC_KEYCODE = 27;
 
     var onCrossCardClose = function (evt) {
-      if ((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === ENTER_KEYCODE)) {
+      if ((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.common.Keycode.ENTER)) {
         newOfferCard.remove();
       }
     };
 
     var onEscCardClose = function (evt) {
-      if ((evt.type === 'keydown') && (evt.keyCode === ESC_KEYCODE)) {
+      if ((evt.type === 'keydown') && (evt.keyCode === window.common.Keycode.ESC)) {
+        document.removeEventListener('keydown', onEscCardClose);
         newOfferCard.remove();
       }
     };
@@ -63,7 +62,7 @@
     newOfferCard.querySelector('.popup__title').textContent = offerItem.offer.title;
     newOfferCard.querySelector('.popup__text--address').textContent = offerItem.offer.address;
     newOfferCard.querySelector('.popup__text--price').innerHTML = offerItem.offer.price + '&#8381;/ночь';
-    newOfferCard.querySelector('.popup__type').textContent = window.data.apartmentTypesEngToRus[offerItem.offer.type];
+    newOfferCard.querySelector('.popup__type').textContent = window.common.apartmentTypesEngToRus[offerItem.offer.type];
     newOfferCard.querySelector('.popup__text--capacity').textContent = declinationCount(offerItem.offer.rooms, 'комната', 'комнаты') + ' для ' + declinationCount(offerItem.offer.guests, 'гостя', 'гостей');
     newOfferCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
     deleteUnexistsItem(cardFeaturesElementList, offerItem.offer.features);

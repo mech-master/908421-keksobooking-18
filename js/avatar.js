@@ -47,4 +47,15 @@
 
   uploadImage(avatarFileChooser, avatarPreview);
   uploadImage(flatPhotoFileChooser, flatPhotoPreview);
+
+  var onImageReset = function () {
+    avatarPreview.src = 'img/avatars/default.png';
+    flatPhotoPreview.querySelectorAll('img').forEach(function (item) {
+      item.remove();
+    });
+  };
+
+  window.avatar = {
+    onImageReset: onImageReset
+  };
 })();
