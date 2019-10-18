@@ -51,7 +51,7 @@
     var sectionMain = document.querySelector('main');
     var messageSuccess = templateSuccessMessage.cloneNode(true);
     var onMessageSuccessClose = function (evt) {
-      if (((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.common.Keycode.ESC))) {
+      if ((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.common.Keycode.ESC)) {
         messageSuccess.remove();
         document.removeEventListener('keydown', onMessageSuccessClose);
       }

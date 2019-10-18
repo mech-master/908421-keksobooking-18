@@ -28,6 +28,19 @@
     return mainMapPinCoordinates;
   };
 
+  /* Обработчик нажатия на label загрузки изображений /* */
+  var adFormDropZones = ['.ad-form-header__drop-zone', 'ad-form__drop-zone'];
+  adFormDropZones.forEach(function (className) {
+    if (document.querySelector(className)) {
+      var element = document.querySelector(className);
+      element.addEventListener('keydown', function (evt) {
+        if (evt.keyCode === window.common.Keycode.ENTER) {
+          document.querySelector('#' + element.htmlFor).click();
+        }
+      });
+    }
+  });
+
   var formRoomNumberSelect = document.querySelector('#room_number');
   var formGuestCapacitySelect = document.querySelector('#capacity');
   var ROOM_NUMBER_HUNDRED_INDEX = 3;
