@@ -3,132 +3,112 @@
 /* Загрузка и фильтрация данных /* */
 
 (function () {
+  var DEBOUNCE_DELAY = 500;
+
   window.filter = {
     offerList: '',
     isDataLoaded: false
   };
 
-  var loadOfferDataSuccess = function (data) {
+  var onDataSuccessLoaded = function (data) {
     if (data) {
-      var filterdOffers = filterIncomingData(data);
+      var filteredOffers = filterIncomingData(data);
       window.filter.offerList = data;
-      window.pin.fillPinContainer(filterdOffers);
+      window.pin.fillPinContainer(filteredOffers);
       window.filter.isDataLoaded = true;
-      window.pageControl.pageDisableStatusChange(false);
+      window.pageControl.changePageStatus(false);
     }
   };
 
   var loadOfferData = function () {
     try {
-      window.backend.load(loadOfferDataSuccess, window.common.onErrorMessageShow);
+      window.backend.load(onDataSuccessLoaded, window.common.onErrorMessageShow);
     } catch (err) {
       throw new Error('Ошибка ' + err.name + ' : ' + err.message + '\n' + err.stack);
     }
   };
 
-  /* var filterControlElements = ['#housing-type', '#housing-price', '#housing-rooms', '#housing-guests', '#filter-wifi', '#filter-dishwasher', '#filter-parking', '#filter-washer', '#filter-elevator', '#filter-conditioner'];/* */
-  var filterForm = document.querySelector('.map__filters');
-  var filterSelectElements = filterForm.querySelectorAll('select');
-  var fuaturesFieldset = filterForm.querySelector('.map__features');
-  var filterInputElements = fuaturesFieldset.querySelectorAll('input');
+  var filterFormElement = document.querySelector('.map__filters');
+  var featuresContainerElement = filterFormElement.querySelector('.map__features');
+  var flatTypeElement = filterFormElement.querySelector('#housing-type');
+  var flatPriceElement = filterFormElement.querySelector('#housing-price');
+  var flatRoomsElement = filterFormElement.querySelector('#housing-rooms');
+  var flatGuestsElement = filterFormElement.querySelector('#housing-guests');
 
   var filterIncomingData = function (data) {
-    var flatType = filterForm.querySelector('#housing-type');
-    var flatPrice = filterForm.querySelector('#housing-price');
-    var flatRooms = filterForm.querySelector('#housing-rooms');
-    var flatGuests = filterForm.querySelector('#housing-guests');
     return data.filter(function (item) {
-      var result = true;
-
-      if (flatType.options[flatType.options.selectedIndex].value !== 'any' &&
-        item.offer.type !== flatType.options[flatType.options.selectedIndex].value) {
-        result = false;
+      var flatTypeValue = flatTypeElement.options[flatTypeElement.options.selectedIndex].value;
+      if (flatTypeValue !== 'any' &&
+        item.offer.type !== flatTypeValue) {
+        return false;
       }
 
-      if (!result) {
-        return result;
-      }
-
-      switch (flatPrice.options[flatPrice.options.selectedIndex].value) {
-        case 'any':
-          break;
+      switch (flatPriceElement.options[flatPriceElement.options.selectedIndex].value) {
         case 'middle':
           if (item.offer.price < 10000 || item.offer.price > 50000) {
-            result = false;
+            return false;
           }
           break;
         case 'low':
           if (item.offer.price > 10000) {
-            result = false;
+            return false;
           }
           break;
         case 'high':
           if (item.offer.price < 50000) {
-            result = false;
+            return false;
           }
+          break;
       }
 
-      if (!result) {
-        return result;
+      var flatRoomsValue = flatRoomsElement.options[flatRoomsElement.options.selectedIndex].value;
+
+      if (flatRoomsValue !== 'any' && parseInt(flatRoomsValue, 10) !== item.offer.rooms) {
+        return false;
       }
 
-      if (flatRooms.options[flatRooms.options.selectedIndex].value !== 'any' && parseInt(flatRooms.options[flatRooms.options.selectedIndex].value, 10) !== item.offer.rooms) {
-        result = false;
+      var flatGuestsValue = flatGuestsElement.options[flatGuestsElement.options.selectedIndex].value;
+
+      if (flatGuestsValue !== 'any' && parseInt(flatGuestsValue, 10) !== item.offer.guests) {
+        return false;
       }
 
-      if (!result) {
-        return result;
+      var InputCheckedElements = featuresContainerElement.querySelectorAll('.map__checkbox:checked');
+      for (var m = 0; m < InputCheckedElements.length; m++) {
+        if (item.offer.features.indexOf(InputCheckedElements[m].value) === -1) {
+          return false;
+        }
       }
-
-      if (flatGuests.options[flatGuests.options.selectedIndex].value !== 'any' && parseInt(flatGuests.options[flatGuests.options.selectedIndex].value, 10) !== item.offer.guests) {
-        result = false;
-      }
-
-      if (!result) {
-        return result;
-      }
-      var filterInputCheckedElements = fuaturesFieldset.querySelectorAll('.map__checkbox:checked');
-      if (filterInputCheckedElements) {
-        filterInputCheckedElements.forEach(function (feature) {
-          if (item.offer.features.indexOf(feature.value) === -1) {
-            result = false;
-          }
-        });
-      }
-      return result;
+      return true;
     });
   };
 
   var lastTimer;
-  var DEBOUNCE_DELAY = 500;
+  var onFilterChange = function () {
+    if (lastTimer) {
+      window.clearTimeout(lastTimer);
+    }
 
-  var onFilterChange = function (evt) {
-    if (evt.type === 'change' || evt.type === 'click' || (evt.type === 'keydown' && evt.keyCode === window.common.Keycode.ENTER)) {
-      if (evt.target.tagName.toLowerCase() === 'input' && evt.type === 'keydown') {
-        if (evt.target.checked) {
-          evt.target.checked = false;
-        } else {
-          evt.target.checked = true;
-        }
-      }
-      if (lastTimer) {
-        window.clearTimeout(lastTimer);
-      }
+    lastTimer = window.setTimeout(window.pin.fillPinContainer(filterIncomingData(window.filter.offerList)), DEBOUNCE_DELAY);
+  };
 
-      lastTimer = window.setTimeout(window.pin.fillPinContainer(filterIncomingData(window.filter.offerList)), DEBOUNCE_DELAY);
+  var onFilterSelectChange = function () {
+    onFilterChange();
+  };
+
+  var onFilterInputEnterPressed = function (evt) {
+    if (evt.target.tagName.toLowerCase() === 'input' && evt.keyCode === window.common.Keycode.ENTER) {
+      evt.target.checked = evt.target.checked ? false : true;
+      onFilterChange();
     }
   };
 
   /* Создание обработчиков событий изменения Select и выбора Input /* */
 
-  filterSelectElements.forEach(function (item) {
-    item.addEventListener('change', onFilterChange);
-  });
+  var filtersContainerElement = document.querySelector('.map__filters');
 
-  filterInputElements.forEach(function (item) {
-    item.addEventListener('click', onFilterChange);
-    item.addEventListener('keydown', onFilterChange);
-  });
+  filtersContainerElement.addEventListener('change', onFilterSelectChange);
+  filtersContainerElement.addEventListener('keydown', onFilterInputEnterPressed);
 
   window.filter['loadOfferData'] = loadOfferData;
   window.filter['filterIncomingData'] = filterIncomingData;
