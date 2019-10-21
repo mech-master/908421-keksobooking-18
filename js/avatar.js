@@ -1,19 +1,18 @@
 'use strict';
 
 (function () {
+  var FLAT_PHOTO_WIDTH = 70;
+  var FLAT_PHOTO_HEIGHT = 70;
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
   var avatarFileChooser = document.querySelector('#avatar');
   var avatarPreview = document.querySelector('.ad-form-header__preview img');
   var flatPhotoFileChooser = document.querySelector('#images');
   var flatPhotoPreview = document.querySelector('.ad-form__photo');
-  var FLAT_PHOTO_WIDTH = 70;
-  var FLAT_PHOTO_HEIGHT = 70;
 
-  var uploadImage = function (elementFileChooser, elementPriview) {
-    var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
-
-    elementFileChooser.addEventListener('change', function () {
-      var file = elementFileChooser.files[0];
+  var setPrevievForFilechooser = function (fileChooserElement, elementPriview) {
+    fileChooserElement.addEventListener('change', function () {
+      var file = fileChooserElement.files[0];
       var fileName = file.name.toLowerCase();
 
       var matches = FILE_TYPES.some(function (item) {
@@ -45,10 +44,10 @@
     });
   };
 
-  uploadImage(avatarFileChooser, avatarPreview);
-  uploadImage(flatPhotoFileChooser, flatPhotoPreview);
+  setPrevievForFilechooser(avatarFileChooser, avatarPreview);
+  setPrevievForFilechooser(flatPhotoFileChooser, flatPhotoPreview);
 
-  var onImageReset = function () {
+  var onPreviewReset = function () {
     avatarPreview.src = 'img/avatars/default.png';
     flatPhotoPreview.querySelectorAll('img').forEach(function (item) {
       item.remove();
@@ -56,6 +55,6 @@
   };
 
   window.avatar = {
-    onImageReset: onImageReset
+    onPreviewReset: onPreviewReset
   };
 })();

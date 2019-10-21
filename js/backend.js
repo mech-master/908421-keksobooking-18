@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var SUCCESS_STATUS = 200;
+  var ANSWER_TIMEOUT = 10000;
+
   window.backend = {
     operationType: 'load',
     exchangeData: function (onLoad, onError, data) {
@@ -9,7 +12,7 @@
       xhr.responseType = 'json';
       xhr.multipart = true;
       xhr.addEventListener('load', function () {
-        if (xhr.status === 200) {
+        if (xhr.status === SUCCESS_STATUS) {
           onLoad(xhr.response);
         } else {
           onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
@@ -24,7 +27,7 @@
         onError('Запрос не успел выполниться за ' + xhr.timeout + ' мс.');
       });
 
-      xhr.timeout = 10000;
+      xhr.timeout = ANSWER_TIMEOUT;
 
       switch (this.operationType) {
         case 'load':

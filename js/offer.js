@@ -1,36 +1,38 @@
 'use strict';
 
 (function () {
+  var ROOM_NUMBER_HUNDRED_INDEX = 3;
+  var GUEST_CAPACITY_NONE_INDEX = 3;
+  var GUEST_CAPACITY_ONE_INDEX = 2;
+  var POINTER_HEIGHT = 17;
+
   var refreshAddressValue = function () {
-    var mapContainer = document.querySelector('.map');
-    var mainMapPin = mapContainer.querySelector('.map__pin--main');
-    var mainMapPinParameters = {
-      left: mainMapPin.offsetLeft,
-      top: mainMapPin.offsetTop,
-      width: mainMapPin.offsetWidth,
-      height: mainMapPin.offsetHeight
+    var mapContainerElement = document.querySelector('.map');
+    var mainMapPinElement = mapContainerElement.querySelector('.map__pin--main');
+    var mainMapPinParameter = {
+      left: mainMapPinElement.offsetLeft,
+      top: mainMapPinElement.offsetTop,
+      width: mainMapPinElement.offsetWidth,
+      height: mainMapPinElement.offsetHeight
+    };
+    var formAddressInput = document.querySelector('#address');
+
+    var mainMapPinCoordinate = {
+      x: Math.round(mainMapPinParameter.left + mainMapPinParameter.width / 2),
+      y: Math.round(mainMapPinParameter.top + mainMapPinParameter.height + POINTER_HEIGHT)
     };
 
-    var POINTER_HEIGHT = 17;
-
-    var formAdressInput = document.querySelector('#address');
-
-    var mainMapPinCoordinates = {
-      x: Math.round(mainMapPinParameters.left + mainMapPinParameters.width / 2),
-      y: Math.round(mainMapPinParameters.top + mainMapPinParameters.height + POINTER_HEIGHT)
-    };
-
-    if (mapContainer.classList.contains('map--faded')) {
-      mainMapPinCoordinates.y = Math.round(mainMapPinParameters.top + mainMapPinParameters.height / 2);
+    if (mapContainerElement.classList.contains('map--faded')) {
+      mainMapPinCoordinate.y = Math.round(mainMapPinParameter.top + mainMapPinParameter.height / 2);
     }
 
-    formAdressInput.value = mainMapPinCoordinates.x + ', ' + mainMapPinCoordinates.y;
-    return mainMapPinCoordinates;
+    formAddressInput.value = mainMapPinCoordinate.x + ', ' + mainMapPinCoordinate.y;
+    return mainMapPinCoordinate;
   };
 
   /* Обработчик нажатия на label загрузки изображений /* */
-  var adFormDropZones = ['.ad-form-header__drop-zone', 'ad-form__drop-zone'];
-  adFormDropZones.forEach(function (className) {
+  var adFormDropZoneElements = ['.ad-form-header__drop-zone', 'ad-form__drop-zone'];
+  adFormDropZoneElements.forEach(function (className) {
     if (document.querySelector(className)) {
       var element = document.querySelector(className);
       element.addEventListener('keydown', function (evt) {
@@ -41,81 +43,87 @@
     }
   });
 
-  var formRoomNumberSelect = document.querySelector('#room_number');
-  var formGuestCapacitySelect = document.querySelector('#capacity');
-  var ROOM_NUMBER_HUNDRED_INDEX = 3;
-  var GUEST_CAPACITY_NONE_INDEX = 3;
-  var GUEST_CAPACITY_ONE_INDEX = 2;
+  var roomNumberElement = document.querySelector('#room_number');
+  var guestCapacityElement = document.querySelector('#capacity');
 
-  if (formRoomNumberSelect.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
-    formGuestCapacitySelect.options.selectedIndex = GUEST_CAPACITY_ONE_INDEX - formRoomNumberSelect.options.selectedIndex;
+  if (roomNumberElement.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
+    guestCapacityElement.options.selectedIndex = GUEST_CAPACITY_ONE_INDEX - roomNumberElement.options.selectedIndex;
   } else {
-    formGuestCapacitySelect.options.selectedIndex = GUEST_CAPACITY_NONE_INDEX;
+    guestCapacityElement.options.selectedIndex = GUEST_CAPACITY_NONE_INDEX;
   }
 
   var checkRoomsGuestsBalance = function () {
     var abilityOptionIndexList = [];
-    if (formRoomNumberSelect.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
-      for (var i = GUEST_CAPACITY_ONE_INDEX; i >= GUEST_CAPACITY_ONE_INDEX - formRoomNumberSelect.options.selectedIndex; i--) {
+    if (roomNumberElement.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
+      for (var i = GUEST_CAPACITY_ONE_INDEX; i >= GUEST_CAPACITY_ONE_INDEX - roomNumberElement.options.selectedIndex; i--) {
         abilityOptionIndexList.push(i);
       }
     } else {
       abilityOptionIndexList = [GUEST_CAPACITY_NONE_INDEX];
     }
 
-    if (abilityOptionIndexList.indexOf(formGuestCapacitySelect.options.selectedIndex) === -1) {
+    if (abilityOptionIndexList.indexOf(guestCapacityElement.options.selectedIndex) === -1) {
       var message = 'При выбранном количестве комнат: ' +
-      formRoomNumberSelect.options[formRoomNumberSelect.options.selectedIndex].text +
+      roomNumberElement.options[roomNumberElement.options.selectedIndex].text +
       '; могут быть выбраны только следующие параметры: ';
       for (var j = 0; j < abilityOptionIndexList.length; j++) {
         if (j) {
-          message += formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
+          message += guestCapacityElement.options[abilityOptionIndexList[j]].text;
         } else {
-          message += ', ' + formGuestCapacitySelect.options[abilityOptionIndexList[j]].text;
+          message += ', ' + guestCapacityElement.options[abilityOptionIndexList[j]].text;
         }
       }
-      formGuestCapacitySelect.setCustomValidity(message);
+      guestCapacityElement.setCustomValidity(message);
     } else {
-      formGuestCapacitySelect.setCustomValidity('');
+      guestCapacityElement.setCustomValidity('');
     }
   };
 
-  formGuestCapacitySelect.addEventListener('change', checkRoomsGuestsBalance);
-  formRoomNumberSelect.addEventListener('change', checkRoomsGuestsBalance);
+  guestCapacityElement.addEventListener('change', checkRoomsGuestsBalance);
+  roomNumberElement.addEventListener('change', checkRoomsGuestsBalance);
 
-  var flatMinimumPrices = {
+  var flatMinimumPrice = {
     'bungalo': 0,
     'flat': 1000,
     'house': 5000,
     'palace': 10000
   };
 
-  var flatTypeSelect = document.querySelector('#type');
-  var flatPriceInput = document.querySelector('#price');
+  var flatTypeElement = document.querySelector('#type');
+  var flatPriceElement = document.querySelector('#price');
 
-  var setMininmalPrice = function () {
-    var currentFlatType = flatTypeSelect.options[flatTypeSelect.options.selectedIndex].value;
-    flatPriceInput.setAttribute('min', flatMinimumPrices[currentFlatType]);
-    flatPriceInput.setAttribute('placeholder', flatMinimumPrices[currentFlatType]);
+  var onflatTypeChange = function () {
+    var currentFlatType = flatTypeElement.options[flatTypeElement.options.selectedIndex].value;
+    flatPriceElement.setAttribute('min', flatMinimumPrice[currentFlatType]);
+    flatPriceElement.setAttribute('placeholder', flatMinimumPrice[currentFlatType]);
   };
 
-  flatTypeSelect.addEventListener('change', setMininmalPrice);
+  flatTypeElement.addEventListener('change', onflatTypeChange);
 
-  var elementCheckinSelect = document.querySelector('#timein');
-  var elementCheckoutSelect = document.querySelector('#timeout');
+  var checkInElement = document.querySelector('#timein');
+  var checkOutElement = document.querySelector('#timeout');
   var agreeCheckinCheckout = function (evt) {
-    if (evt.target === elementCheckinSelect) {
-      elementCheckoutSelect.options.selectedIndex = elementCheckinSelect.options.selectedIndex;
+    if (evt.target === checkInElement) {
+      checkOutElement.options.selectedIndex = checkInElement.options.selectedIndex;
     } else {
-      elementCheckinSelect.options.selectedIndex = elementCheckoutSelect.options.selectedIndex;
+      checkInElement.options.selectedIndex = checkOutElement.options.selectedIndex;
     }
   };
-  elementCheckinSelect.addEventListener('change', agreeCheckinCheckout);
-  elementCheckoutSelect.addEventListener('change', agreeCheckinCheckout);
+
+  var onCheckInChange = function (evt) {
+    agreeCheckinCheckout(evt);
+  };
+
+  var onCheckOutChange = function (evt) {
+    agreeCheckinCheckout(evt);
+  };
+
+  checkInElement.addEventListener('change', onCheckInChange);
+  checkOutElement.addEventListener('change', onCheckOutChange);
 
   window.offer = {
     refreshAddressValue: refreshAddressValue,
     checkRoomsGuestsBalance: checkRoomsGuestsBalance,
-    setMininmalPrice: setMininmalPrice
+    onflatTypeChange: onflatTypeChange
   };
 })();

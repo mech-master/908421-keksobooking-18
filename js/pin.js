@@ -3,58 +3,63 @@
 (function () {
   var VISIBLE_OFFER_COUNT = 5;
 
-  /* var flatTypeSelect = document.querySelector('#housing-type');
-  var currentFlatType = flatTypeSelect.options[flatTypeSelect.options.selectedIndex].value;/* */
+  var pinContainerElement = document.querySelector('.map__pins');
+  var filtersContainerElement = document.querySelector('.map__filters-container');
 
-  var pinContainer = document.querySelector('.map__pins');
+  var onCardShow = function (pinElement, elementCard) {
+    var showCard = function (target) {
+      window.card.deleteExistingCards();
+      var pinActiveElement = document.querySelector('.map__pin--active');
+      if (pinActiveElement) {
+        pinActiveElement.classList.remove('map__pin--active');
+      }
+      target.classList.add('map__pin--active');
+      filtersContainerElement.before(elementCard);
+    };
 
-  var onCardShow = function (elementPin, elementCard) {
-    var mapFiltersContainer = document.querySelector('.map__filters-container');
+    var onPinClick = function (evt) {
+      showCard(evt.target);
+    };
 
-    var onPinAction = function (evt) {
-      if ((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.common.Keycode.ENTER)) {
-        window.card.deleteExistsCards();
-        if (document.querySelector('.map__pin--active')) {
-          document.querySelector('.map__pin--active').classList.remove('map__pin--active');
-        }
-        evt.currentTarget.classList.add('map__pin--active');
-        mapFiltersContainer.before(elementCard);
+    var onEnterPinPressed = function (evt) {
+      if (evt.keyCode === window.common.Keycode.ENTER) {
+        showCard(evt.target);
       }
     };
 
-    elementPin.addEventListener('click', onPinAction);
-    elementPin.addEventListener('keydown', onPinAction);
+    pinElement.addEventListener('click', onPinClick);
+    pinElement.addEventListener('keydown', onEnterPinPressed);
   };
 
   var createOfferPins = function (offerList) {
     var pinsFragment = document.createDocumentFragment();
-    var pinTempate = document.querySelector('#pin').content.querySelector('.map__pin');
+    var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
     var offerCount = offerList.length > VISIBLE_OFFER_COUNT ? VISIBLE_OFFER_COUNT : offerList.length;
 
     for (var l = 0; l < offerCount; l++) {
       if (offerList[l].offer) {
-        var newOfferPin = pinTempate.cloneNode(true);
-        newOfferPin.style.left = (offerList[l].location.x - window.common.PIN_WIDTH / 2) + 'px';
-        newOfferPin.style.top = (offerList[l].location.y - window.common.PIN_HEIGHT) + 'px';
-        var pinImage = newOfferPin.querySelector('img');
-        pinImage.src = offerList[l].author.avatar;
-        pinImage.alt = offerList[l].offer.title;
+        var newPinElement = pinTemplate.cloneNode(true);
+        newPinElement.style.left = (offerList[l].location.x - window.common.PIN_WIDTH / 2) + 'px';
+        newPinElement.style.top = (offerList[l].location.y - window.common.PIN_HEIGHT) + 'px';
+        var pinImageElement = newPinElement.querySelector('img');
+        pinImageElement.src = offerList[l].author.avatar;
+        pinImageElement.alt = offerList[l].offer.title;
 
         var newOfferCard = window.card.createOfferCards(offerList[l]);
 
-        onCardShow(newOfferPin, newOfferCard);
+        onCardShow(newPinElement, newOfferCard);
 
-        pinsFragment.appendChild(newOfferPin);
+        pinsFragment.appendChild(newPinElement);
       }
     }
 
     return pinsFragment;
   };
 
-  var deleteExistsPins = function () {
-    var existsMapPins = pinContainer.querySelectorAll('.map__pin');
-    window.card.deleteExistsCards();
-    existsMapPins.forEach(function (item) {
+  var deleteExistingPins = function () {
+    var MapPinElements = pinContainerElement.querySelectorAll('.map__pin');
+    window.card.deleteExistingCards();
+    MapPinElements.forEach(function (item) {
       if (!item.classList.contains('map__pin--main')) {
         item.remove();
       }
@@ -62,13 +67,12 @@
   };
 
   var fillPinContainer = function (data) {
-    deleteExistsPins();
-    var mapPinsFragment = createOfferPins(data);
-    pinContainer.appendChild(mapPinsFragment);
+    deleteExistingPins();
+    pinContainerElement.appendChild(createOfferPins(data));
   };
 
   window.pin = {
     fillPinContainer: fillPinContainer,
-    deleteExistsPins: deleteExistsPins
+    deleteExistingPins: deleteExistingPins
   };
 })();

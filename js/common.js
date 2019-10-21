@@ -1,7 +1,12 @@
 'use strict';
 
 (function () {
-  var OFFER_COUNT = 8;
+  var PIN_WIDTH = 50;
+  var PIN_HEIGHT = 70;
+  var MapContainerOffset = {
+    TOP: 130,
+    BOTTOM: 600
+  };
   var Keycode = {
     ESC: 27,
     ENTER: 13
@@ -14,63 +19,72 @@
     'bungalo': 'Бунгало'
   };
 
-
-  var PIN_WIDTH = 50;
-  var PIN_HEIGHT = 70;
-  var MapContainerOffset = {
-    TOP: 130,
-    BOTTOM: 600
-  };
+  var sectionMainElement = document.querySelector('main');
 
   var onErrorMessageShow = function (message) {
-    var templateErrorMessage = document.querySelector('#error').content.querySelector('.error');
-    var sectionMain = document.querySelector('main');
-    var messageError = templateErrorMessage.cloneNode(true);
-    var paragraphErrorMessage = messageError.querySelector('.error__message');
-    var buttonErrorMessageClose = messageError.querySelector('.error__button');
-    var onErrorMessageClose = function (evt) {
-      if (((evt.type === 'click') ||
-        (evt.type === 'keydown' && evt.keyCode === window.common.Keycode.ESC)) ||
-        (evt.type === 'keydown' && evt.keyCode === window.common.Keycode.ENTER && evt.target === buttonErrorMessageClose)) {
-        messageError.remove();
-        document.removeEventListener('keydown', onErrorMessageClose);
+    var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
+    var errorMessageElement = errorMessageTemplate.cloneNode(true);
+    var messageParagraphElement = errorMessageElement.querySelector('.error__message');
+    var buttonMessageCloseElement = errorMessageElement.querySelector('.error__button');
+
+    var onErrorMessageClose = function () {
+      errorMessageElement.remove();
+      document.removeEventListener('keydown', onEscErrorMessageClose);
+    };
+    var onEscErrorMessageClose = function (evt) {
+      if (evt.keyCode === window.common.Keycode.ESC) {
+        onErrorMessageClose();
       }
     };
-    messageError.addEventListener('click', onErrorMessageClose);
-    document.addEventListener('keydown', onErrorMessageClose);
-    buttonErrorMessageClose.addEventListener('click', onErrorMessageClose);
-    buttonErrorMessageClose.addEventListener('keydown', onErrorMessageClose);
-    paragraphErrorMessage.textContent = message;
-    sectionMain.appendChild(messageError);
-    buttonErrorMessageClose.focus();
+    var onClickMessageClose = function () {
+      onErrorMessageClose();
+    };
+    var onEnterMessageClose = function (evt) {
+      if (evt.keyCode === window.common.Keycode.ENTER) {
+        onErrorMessageClose();
+      }
+    };
+    errorMessageElement.addEventListener('click', onClickMessageClose);
+    document.addEventListener('keydown', onEscErrorMessageClose);
+    buttonMessageCloseElement.addEventListener('keydown', onEnterMessageClose);
+    messageParagraphElement.textContent = message;
+    sectionMainElement.appendChild(errorMessageElement);
+    buttonMessageCloseElement.focus();
     window.pageControl.isDataLoaded = false;
   };
 
-  var onSuccessMessageShow = function () {
-    var templateSuccessMessage = document.querySelector('#success').content.querySelector('.success');
-    var sectionMain = document.querySelector('main');
-    var messageSuccess = templateSuccessMessage.cloneNode(true);
-    var onMessageSuccessClose = function (evt) {
-      if ((evt.type === 'click') || (evt.type === 'keydown' && evt.keyCode === window.common.Keycode.ESC)) {
-        messageSuccess.remove();
-        document.removeEventListener('keydown', onMessageSuccessClose);
+  var onMessageSuccessShow = function () {
+    var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
+    var successMessageElement = successMessageTemplate.cloneNode(true);
+    var onMessageSuccessClose = function () {
+      successMessageElement.remove();
+      document.removeEventListener('keydown', onMessageSuccessClose);
+    };
+
+    var onClickMessageClose = function () {
+      onMessageSuccessClose();
+    };
+
+    var onEscMessageClose = function (evt) {
+      if (evt.keyCode === window.common.Keycode.ESC) {
+        onMessageSuccessClose();
       }
     };
-    messageSuccess.addEventListener('click', onMessageSuccessClose);
-    document.addEventListener('keydown', onMessageSuccessClose);
-    sectionMain.appendChild(messageSuccess);
-    window.pageControl.pageDisableStatusChange(true);
+
+    successMessageElement.addEventListener('click', onClickMessageClose);
+    document.addEventListener('keydown', onEscMessageClose);
+    sectionMainElement.appendChild(successMessageElement);
+    window.pageControl.changePageStatus(true);
   };
 
   window.common = {
     Keycode: Keycode,
-    OFFER_COUNT: OFFER_COUNT,
     PIN_WIDTH: PIN_WIDTH,
     PIN_HEIGHT: PIN_HEIGHT,
     apartmentTypesEngToRus: apartmentTypesEngToRus,
     MapContainerOffset: MapContainerOffset,
     onErrorMessageShow: onErrorMessageShow,
-    onSuccessMessageShow: onSuccessMessageShow
+    onMessageSuccessShow: onMessageSuccessShow
   };
 })();
 
