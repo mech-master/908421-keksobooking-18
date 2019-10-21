@@ -15,7 +15,7 @@
       width: mainMapPinElement.offsetWidth,
       height: mainMapPinElement.offsetHeight
     };
-    var formAddressInput = document.querySelector('#address');
+    var addressInputElement = document.querySelector('#address');
 
     var mainMapPinCoordinate = {
       x: Math.round(mainMapPinParameter.left + mainMapPinParameter.width / 2),
@@ -26,7 +26,7 @@
       mainMapPinCoordinate.y = Math.round(mainMapPinParameter.top + mainMapPinParameter.height / 2);
     }
 
-    formAddressInput.value = mainMapPinCoordinate.x + ', ' + mainMapPinCoordinate.y;
+    addressInputElement.value = mainMapPinCoordinate.x + ', ' + mainMapPinCoordinate.y;
     return mainMapPinCoordinate;
   };
 
@@ -94,8 +94,9 @@
 
   var onflatTypeChange = function () {
     var currentFlatType = flatTypeElement.options[flatTypeElement.options.selectedIndex].value;
-    flatPriceElement.setAttribute('min', flatMinimumPrice[currentFlatType]);
-    flatPriceElement.setAttribute('placeholder', flatMinimumPrice[currentFlatType]);
+
+    flatPriceElement.min = flatMinimumPrice[currentFlatType];
+    flatPriceElement.placeholder = flatMinimumPrice[currentFlatType];
   };
 
   flatTypeElement.addEventListener('change', onflatTypeChange);

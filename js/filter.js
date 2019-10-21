@@ -75,9 +75,9 @@
         return false;
       }
 
-      var InputCheckedElements = featuresContainerElement.querySelectorAll('.map__checkbox:checked');
-      for (var m = 0; m < InputCheckedElements.length; m++) {
-        if (item.offer.features.indexOf(InputCheckedElements[m].value) === -1) {
+      var inputCheckedElements = featuresContainerElement.querySelectorAll('.map__checkbox:checked');
+      for (var m = 0; m < inputCheckedElements.length; m++) {
+        if (item.offer.features.indexOf(inputCheckedElements[m].value) === -1) {
           return false;
         }
       }

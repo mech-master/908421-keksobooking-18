@@ -77,8 +77,8 @@
   };
 
   var deleteExistingCards = function () {
-    var existingCardList = document.querySelectorAll('.map__card.popup');
-    existingCardList.forEach(function (item) {
+    var cardElements = document.querySelectorAll('.map__card.popup');
+    cardElements.forEach(function (item) {
       item.remove();
     });
   };
