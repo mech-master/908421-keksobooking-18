@@ -44,6 +44,8 @@
       }
 
       switch (flatPriceElement.options[flatPriceElement.options.selectedIndex].value) {
+        case 'any':
+          break;
         case 'middle':
           if (item.offer.price < 10000 || item.offer.price > 50000) {
             return false;
