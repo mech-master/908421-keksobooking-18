@@ -5,8 +5,9 @@
 
   var pinContainerElement = document.querySelector('.map__pins');
   var filtersContainerElement = document.querySelector('.map__filters-container');
+  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
-  var onCardShow = function (pinElement, elementCard) {
+  var onCardShow = function (pinElement, cardElement) {
     var showCard = function (target) {
       window.card.deleteExistingCards();
       var pinActiveElement = document.querySelector('.map__pin--active');
@@ -14,7 +15,7 @@
         pinActiveElement.classList.remove('map__pin--active');
       }
       target.classList.add('map__pin--active');
-      filtersContainerElement.before(elementCard);
+      filtersContainerElement.before(cardElement);
     };
 
     var onPinClick = function (evt) {
@@ -33,7 +34,6 @@
 
   var createOfferPins = function (offerList) {
     var pinsFragment = document.createDocumentFragment();
-    var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
     var offerCount = offerList.length > VISIBLE_OFFER_COUNT ? VISIBLE_OFFER_COUNT : offerList.length;
 
     for (var l = 0; l < offerCount; l++) {

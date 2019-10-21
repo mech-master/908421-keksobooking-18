@@ -13,12 +13,11 @@
 
   /* Перевод всех элементов управления из списка в активный/неактивный режим /* */
 
-  var formElementDisableStatusChange = function (masterForm, selectorList, status) {
-    selectorList.forEach(function (selectorName) {
-      masterForm.querySelectorAll(selectorName).forEach(function (element) {
-        element.disabled = status;
-      });
-    });
+  var changeFormElementsStatus = function (masterForm, selectorList, status) {
+    var elementList = masterForm.querySelectorAll(selectorList.join(','));
+    for (var j = 0; j < elementList.length; j++) {
+      elementList[j].disabled = status;
+    }
   };
 
   /* Сброс страницы и форм в первоначальное состояние /* */
@@ -30,7 +29,7 @@
     filterFormElement.reset();
     offerFormElement.reset();
     window.filter.isDataLoaded = false;
-    window.avatar.onPreviewReset();
+    window.avatar.resetPreview();
     window.offer.checkRoomsGuestsBalance();
   };
 
@@ -53,8 +52,8 @@
     }
     var formElementSelectors = ['input', 'select', 'button', 'textarea'];
 
-    formElementDisableStatusChange(offerFormElement, formElementSelectors, isDisabled);
-    formElementDisableStatusChange(filterFormElement, formElementSelectors, isDisabled);
+    changeFormElementsStatus(offerFormElement, formElementSelectors, isDisabled);
+    changeFormElementsStatus(filterFormElement, formElementSelectors, isDisabled);
     if (isDisabled) {
       resetPage();
     }
