@@ -5,6 +5,7 @@
   var GUEST_CAPACITY_NONE_INDEX = 3;
   var GUEST_CAPACITY_ONE_INDEX = 2;
   var POINTER_HEIGHT = 17;
+  var IMAGE_DROP_ZONE_SELECTORS = ['.ad-form-header__drop-zone', 'ad-form__drop-zone'];
 
   var refreshAddressValue = function () {
     var mapContainerElement = document.querySelector('.map');
@@ -31,8 +32,7 @@
   };
 
   /* Обработчик нажатия на label загрузки изображений /* */
-  var adFormDropZoneElements = ['.ad-form-header__drop-zone', 'ad-form__drop-zone'];
-  adFormDropZoneElements.forEach(function (className) {
+  IMAGE_DROP_ZONE_SELECTORS.forEach(function (className) {
     if (document.querySelector(className)) {
       var element = document.querySelector(className);
       element.addEventListener('keydown', function (evt) {
@@ -46,11 +46,7 @@
   var roomNumberElement = document.querySelector('#room_number');
   var guestCapacityElement = document.querySelector('#capacity');
 
-  if (roomNumberElement.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) {
-    guestCapacityElement.options.selectedIndex = GUEST_CAPACITY_ONE_INDEX - roomNumberElement.options.selectedIndex;
-  } else {
-    guestCapacityElement.options.selectedIndex = GUEST_CAPACITY_NONE_INDEX;
-  }
+  guestCapacityElement.options.selectedIndex = (roomNumberElement.options.selectedIndex < ROOM_NUMBER_HUNDRED_INDEX) ? GUEST_CAPACITY_ONE_INDEX - roomNumberElement.options.selectedIndex : GUEST_CAPACITY_NONE_INDEX;
 
   var checkRoomsGuestsBalance = function () {
     var abilityOptionIndexList = [];
@@ -68,9 +64,9 @@
       '; могут быть выбраны только следующие параметры: ';
       for (var j = 0; j < abilityOptionIndexList.length; j++) {
         if (j) {
-          message += guestCapacityElement.options[abilityOptionIndexList[j]].text;
-        } else {
           message += ', ' + guestCapacityElement.options[abilityOptionIndexList[j]].text;
+        } else {
+          message += guestCapacityElement.options[abilityOptionIndexList[j]].text;
         }
       }
       guestCapacityElement.setCustomValidity(message);
@@ -103,7 +99,7 @@
 
   var checkInElement = document.querySelector('#timein');
   var checkOutElement = document.querySelector('#timeout');
-  var agreeCheckinCheckout = function (evt) {
+  var onCheckinCheckoutChange = function (evt) {
     if (evt.target === checkInElement) {
       checkOutElement.options.selectedIndex = checkInElement.options.selectedIndex;
     } else {
@@ -111,16 +107,8 @@
     }
   };
 
-  var onCheckInChange = function (evt) {
-    agreeCheckinCheckout(evt);
-  };
-
-  var onCheckOutChange = function (evt) {
-    agreeCheckinCheckout(evt);
-  };
-
-  checkInElement.addEventListener('change', onCheckInChange);
-  checkOutElement.addEventListener('change', onCheckOutChange);
+  checkInElement.addEventListener('change', onCheckinCheckoutChange);
+  checkOutElement.addEventListener('change', onCheckinCheckoutChange);
 
   window.offer = {
     refreshAddressValue: refreshAddressValue,

@@ -137,10 +137,6 @@
     window.offer.refreshAddressValue();
   };
 
-  var onButtonResetClick = function (evt) {
-    onAdFormReset(evt);
-  };
-
   var onEnterResetPressed = function (evt) {
     if (evt.keyCode === window.common.Keycode.ENTER) {
       onAdFormReset(evt);
@@ -149,7 +145,7 @@
 
   offerFormElement.addEventListener('submit', onAdFormSubmit);
 
-  buttonAdFormResetElement.addEventListener('click', onButtonResetClick);
+  buttonAdFormResetElement.addEventListener('click', onAdFormReset);
   buttonAdFormResetElement.addEventListener('keydown', onEnterResetPressed);
 
   window.pageControl = {

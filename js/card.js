@@ -42,19 +42,19 @@
     var featuresContainerElement = newCardElement.querySelector('.popup__features');
     var buttonCardClose = newCardElement.querySelector('.popup__close');
 
-    var onCrossClickCardClose = function () {
+    var onCardClose = function () {
       newCardElement.remove();
     };
 
     var onCrossEnterCardClose = function (evt) {
       if (evt.keyCode === window.common.Keycode.ENTER) {
-        newCardElement.remove();
+        onCardClose();
       }
     };
 
     var onEscCardClose = function (evt) {
       if (evt.keyCode === window.common.Keycode.ESC) {
-        newCardElement.remove();
+        onCardClose();
       }
     };
 
@@ -69,7 +69,7 @@
     fillPopupPhotoContainer(newCardElement, offerItem.offer.photos);
     newCardElement.querySelector('.popup__avatar').src = offerItem.author.avatar;
 
-    buttonCardClose.addEventListener('click', onCrossClickCardClose);
+    buttonCardClose.addEventListener('click', onCardClose);
     buttonCardClose.addEventListener('keydown', onCrossEnterCardClose);
     document.addEventListener('keydown', onEscCardClose);
 

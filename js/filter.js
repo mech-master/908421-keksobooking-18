@@ -94,13 +94,9 @@
     lastTimer = window.setTimeout(window.pin.fillPinContainer(filterIncomingData(window.filter.offerList)), DEBOUNCE_DELAY);
   };
 
-  var onFilterSelectChange = function () {
-    onFilterChange();
-  };
-
   var onFilterInputEnterPressed = function (evt) {
     if (evt.target.tagName.toLowerCase() === 'input' && evt.keyCode === window.common.Keycode.ENTER) {
-      evt.target.checked = evt.target.checked ? false : true;
+      evt.target.checked = !evt.target.checked;
       onFilterChange();
     }
   };
@@ -109,9 +105,11 @@
 
   var filtersContainerElement = document.querySelector('.map__filters');
 
-  filtersContainerElement.addEventListener('change', onFilterSelectChange);
+  filtersContainerElement.addEventListener('change', onFilterChange);
   filtersContainerElement.addEventListener('keydown', onFilterInputEnterPressed);
 
-  window.filter['loadOfferData'] = loadOfferData;
-  window.filter['filterIncomingData'] = filterIncomingData;
+  window.filter = {
+    loadOfferData: loadOfferData,
+    filterIncomingData: filterIncomingData
+  };
 })();

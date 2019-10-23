@@ -36,15 +36,12 @@
         onErrorMessageClose();
       }
     };
-    var onClickMessageClose = function () {
-      onErrorMessageClose();
-    };
     var onEnterMessageClose = function (evt) {
       if (evt.keyCode === window.common.Keycode.ENTER) {
         onErrorMessageClose();
       }
     };
-    errorMessageElement.addEventListener('click', onClickMessageClose);
+    errorMessageElement.addEventListener('click', onErrorMessageClose);
     document.addEventListener('keydown', onEscErrorMessageClose);
     buttonMessageCloseElement.addEventListener('keydown', onEnterMessageClose);
     messageParagraphElement.textContent = message;
@@ -58,11 +55,7 @@
     var successMessageElement = successMessageTemplate.cloneNode(true);
     var onMessageSuccessClose = function () {
       successMessageElement.remove();
-      document.removeEventListener('keydown', onMessageSuccessClose);
-    };
-
-    var onClickMessageClose = function () {
-      onMessageSuccessClose();
+      document.removeEventListener('keydown', onEscMessageClose);
     };
 
     var onEscMessageClose = function (evt) {
@@ -71,7 +64,7 @@
       }
     };
 
-    successMessageElement.addEventListener('click', onClickMessageClose);
+    successMessageElement.addEventListener('click', onMessageSuccessClose);
     document.addEventListener('keydown', onEscMessageClose);
     sectionMainElement.appendChild(successMessageElement);
     window.pageControl.changePageStatus(true);
